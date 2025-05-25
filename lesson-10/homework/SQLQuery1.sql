@@ -461,11 +461,10 @@ INSERT INTO Sales (SaleID, ProductID, CustomerID, SaleDate, SaleAmount) VALUES
 ------ 1. Employeesva Departmentsjadvallaridan foydalanib ,
 ---			maoshi 50000 dan ortiq bo'lgan xodimlarning ismlari va maoshlarini bo'lim nomlari bilan birga qaytarish uchun so'rov yozing.
 
-SELECT e.Name, e.Salary, d.DepartmentName
+SELECT e.Name AS EmployeeName, e.Salary, d.DepartmentName
 FROM Employees e
-LEFT JOIN Departments d ON e.DepartmentID = d.DepartmentID
+JOIN Departments d ON e.DepartmentID = d.DepartmentID
 WHERE e.Salary > 50000;
-
 
 -----2. Customersva Ordersjadvallaridan foydalanib , 2023-yilda berilgan buyurtmalar uchun mijozlar ismlari va buyurtma sanalarini koʻrsatish uchun soʻrov yozing.
 ---  🔁 Kutilayotgan ustunlar: FirstName , LastName,OrderDate
@@ -480,7 +479,7 @@ WHERE YEAR(o.OrderDate) = 2023;
 ---🔁 Kutilayotgan ustunlar: EmployeeName ,DepartmentName
 
 
-SELECT e.Name, d.DepartmentName
+SELECT e.Name AS EmployeeName, d.DepartmentName
 FROM Employees e
 LEFT JOIN Departments d ON e.DepartmentID = d.DepartmentID;
 
@@ -488,7 +487,6 @@ LEFT JOIN Departments d ON e.DepartmentID = d.DepartmentID;
 ----- 4. Productsva Suppliersjadvallaridan foydalanib , barcha etkazib beruvchilar va ular etkazib beradigan mahsulotlarni ro'yxatga olish uchun so'rov yozing.
 ----Yetkazib beruvchilarni ko'rsating, hatto ular hech qanday mahsulotni etkazib bermasalar ham.
 ----🔁 Kutilayotgan ustunlar: SupplierName ,ProductName
-
 
 SELECT s.SupplierName, p.ProductName
 FROM Suppliers s
@@ -506,18 +504,16 @@ FULL OUTER JOIN Payments p ON o.OrderID = p.OrderID;
 -----6. EmployeesJadvaldan foydalanib , har bir xodimning ismini va menejerining nomini ko'rsatish uchun so'rov yozing.
 ----🔁 Kutilayotgan ustunlar: EmployeeName ,ManagerName
 
-
-SELECT e.Name, m.Name AS ManagerName
+SELECT e.Name AS EmployeeName, m.Name AS ManagerName
 FROM Employees e
 LEFT JOIN Employees m ON e.ManagerID = m.EmployeeID;
-
 
 ------7.  Students, Courses, va Enrollmentsjadvallardan foydalanib , “Matematik 101” kursiga kirgan talabalarning ismlarini roʻyxatga olish uchun soʻrov yozing.
 --🔁 Kutilayotgan ustunlar: StudentName ,CourseName
 
 
 
-SELECT s.Name as StudentName, c.CourseName
+SELECT s.StudentName, c.CourseName
 FROM Students s
 JOIN Enrollments e ON s.StudentID = e.StudentID
 JOIN Courses c ON e.CourseID = c.CourseID
@@ -528,7 +524,6 @@ WHERE c.CourseName = 'Math 101';
 ------- 8. Customersva Ordersjadvallaridan foydalanib , 3 dan ortiq mahsulotga buyurtma bergan mijozlarni topish uchun so'rov yozing. Ularning nomini va buyurtma qilingan miqdorni qaytaring.
 --🔁 Kutilayotgan ustunlar: FirstName , LastName,Quantity
 
-
 SELECT c.FirstName, c.LastName, o.Quantity
 FROM Customers c
 JOIN Orders o ON c.CustomerID = o.CustomerID
@@ -538,11 +533,10 @@ WHERE o.Quantity > 3;
 ---- 9.  Employeesva Departmentsjadvallaridan foydalanib , "Kadrlar" bo'limida ishlaydigan xodimlar ro'yxati uchun so'rov yozing.
 ---🔁 Kutilayotgan ustunlar: EmployeeName ,DepartmentName
 
-SELECT e.Name as Employee_Name, d.DepartmentName
+SELECT e.Name AS EmployeeName, d.DepartmentName
 FROM Employees e
 JOIN Departments d ON e.DepartmentID = d.DepartmentID
 WHERE d.DepartmentName = 'Human Resources';
-
 
 ------------  /\/\/\/\/\/\/\/\   Medium-Level Tasks  /\/\/\/\/\/\/\
 
@@ -557,14 +551,13 @@ JOIN Employees e ON d.DepartmentID = e.DepartmentID
 GROUP BY d.DepartmentName
 HAVING COUNT(e.EmployeeID) > 5;
 
-
 -----11. Productsva Salesjadvallaridan foydalanib , hech qachon sotilmagan mahsulotlarni topish uchun so'rov yozing.
 --🔁 Kutilayotgan ustunlar: ProductID ,ProductName
 
 SELECT p.ProductID, p.ProductName
 FROM Products p
 LEFT JOIN Sales s ON p.ProductID = s.ProductID
-WHERE s.SaleID IS NULL;
+WHERE s.ProductID IS NULL;
 
 ----- 12. Customersva Ordersjadvallaridan foydalanib , kamida bitta buyurtma bergan mijozlar nomlarini qaytarish uchun so'rov yozing.
 --🔁 Kutilayotgan ustunlar: FirstName , LastName,TotalOrders
@@ -576,20 +569,22 @@ GROUP BY c.FirstName, c.LastName;
 
 ---13. Employeesva Departmentsjadvallaridan foydalanib , faqat xodim va bo'lim mavjud bo'lgan yozuvlarni ko'rsatish uchun so'rov yozing (NULLlar yo'q).
 --🔁 Kutilayotgan ustunlar: EmployeeName ,DepartmentName
-
-SELECT e.Name as Employee_namee, d.DepartmentName
+SELECT e.Name AS EmployeeName, d.DepartmentName
 FROM Employees e
-JOIN Departments d ON e.DepartmentID = d.DepartmentID;
+INNER JOIN Departments d ON e.DepartmentID = d.DepartmentID;
+
 
 
 ----14. EmployeesJadvaldan foydalanib , bitta menejerga hisobot beradigan xodimlar juftligini topish uchun so'rov yozing.
 -- 🔁 Kutilayotgan ustunlar: Employee1 , Employee2,ManagerID
 SELECT e1.Name AS Employee1, e2.Name AS Employee2, e1.ManagerID
 FROM Employees e1
-JOIN Employees e2 ON e1.ManagerID = e2.ManagerID AND e1.EmployeeID < e2.EmployeeID;
+JOIN Employees e2 ON e1.ManagerID = e2.ManagerID
+WHERE e1.EmployeeID < e2.EmployeeID;
 
 -----15. Ordersva Customersjadvallaridan foydalanib , 2022-yilda berilgan barcha buyurtmalarni mijoz nomi bilan birga roʻyxatga olish uchun soʻrov yozing.
 ---🔁 Kutilayotgan ustunlar: OrderID , OrderDate, FirstName,LastName
+
 SELECT o.OrderID, o.OrderDate, c.FirstName, c.LastName
 FROM Orders o
 JOIN Customers c ON o.CustomerID = c.CustomerID
@@ -598,7 +593,7 @@ WHERE YEAR(o.OrderDate) = 2022;
 ----16. Employeesva Departmentsjadvallaridan foydalanib , "Savdo" bo'limidan ish haqi 60000 dan yuqori bo'lgan xodimlarni qaytarish uchun so'rov yozing.
 ----🔁 Kutilayotgan ustunlar: EmployeeName , Salary,DepartmentName
 
-SELECT e.name as Employee_name, e.Salary, d.DepartmentName
+SELECT e.Name AS EmployeeName, e.Salary, d.DepartmentName
 FROM Employees e
 JOIN Departments d ON e.DepartmentID = d.DepartmentID
 WHERE d.DepartmentName = 'Sales' AND e.Salary > 60000;
@@ -617,7 +612,7 @@ JOIN Payments p ON o.OrderID = p.OrderID;
 SELECT p.ProductID, p.ProductName
 FROM Products p
 LEFT JOIN Orders o ON p.ProductID = o.ProductID
-WHERE o.OrderID IS NULL;
+WHERE o.ProductID IS NULL;
 
 
 
@@ -630,11 +625,11 @@ WHERE o.OrderID IS NULL;
 SELECT e.Name AS EmployeeName, e.Salary
 FROM Employees e
 JOIN (
-    SELECT DepartmentID, AVG(Salary) AS AvgSalary
-    FROM Employees
-    GROUP BY DepartmentID
-) avg_s ON e.DepartmentID = avg_s.DepartmentID
-WHERE e.Salary > avg_s.AvgSalary;
+  SELECT DepartmentID, AVG(Salary) AS AvgSalary
+  FROM Employees
+  GROUP BY DepartmentID
+) avg_salaries ON e.DepartmentID = avg_salaries.DepartmentID
+WHERE e.Salary > avg_salaries.AvgSalary;
 
 -------20. Ordersva Paymentsjadvallaridan foydalanib , 2020 yilgacha berilgan, tegishli toʻlovi boʻlmagan barcha buyurtmalarni roʻyxatga olish uchun soʻrov yozing.
 --🔁 Kutilayotgan ustunlar: OrderID ,OrderDate
@@ -643,24 +638,24 @@ WHERE e.Salary > avg_s.AvgSalary;
 SELECT o.OrderID, o.OrderDate
 FROM Orders o
 LEFT JOIN Payments p ON o.OrderID = p.OrderID
-WHERE p.PaymentID IS NULL AND o.OrderDate < '2020-01-01';
+WHERE YEAR(o.OrderDate) < 2020 AND p.PaymentID IS NULL;
 
 -------21.Productsva Categoriesjadvallaridan foydalanib , mos toifaga ega bo'lmagan mahsulotlarni qaytarish uchun so'rov yozing.
 --🔁 Kutilayotgan ustunlar: ProductID ,ProductName
 
 SELECT p.ProductID, p.ProductName
 FROM Products p
-LEFT JOIN Categories c ON p.Category = c.CategoryID
+LEFT JOIN Categories c ON p.CategoryID = c.CategoryID
 WHERE c.CategoryID IS NULL;
 	
 ------- 22. EmployeesJadvaldan foydalanib , bitta menejerga hisobot beradigan va 60000 dan ortiq daromad oladigan xodimlarni topish uchun so'rov yozing.
 --🔁 Kutilayotgan ustunlar: Employee1 , Employee2, ManagerID,Salary
 
 
-SELECT e1.Name  AS Employee1, e2.Name AS Employee2, e1.ManagerID, e1.Salary
+SELECT e1.Name AS Employee1, e2.Name AS Employee2, e1.ManagerID, e1.Salary
 FROM Employees e1
-JOIN Employees e2 ON e1.ManagerID = e2.ManagerID AND e1.EmployeeID < e2.EmployeeID
-WHERE e1.Salary > 60000 AND e2.Salary > 60000;
+JOIN Employees e2 ON e1.ManagerID = e2.ManagerID
+WHERE e1.EmployeeID < e2.EmployeeID AND e1.Salary > 60000 AND e2.Salary > 60000;
 
 --------23 .Employeesva Departmentsjadvallaridan foydalanib , nomi "M" harfi bilan boshlanadigan bo'limlarda ishlaydigan xodimlarni qaytarish uchun so'rov yozing.
 --🔁 Kutilayotgan ustunlar: EmployeeName ,DepartmentName
@@ -684,13 +679,13 @@ WHERE s.SaleAmount > 500;
 --🔁 Kutilayotgan ustunlar: StudentID ,StudentName
 
 
-SELECT s.StudentID, s.Name AS StudentName
+SELECT s.StudentID, s.StudentName
 FROM Students s
 WHERE s.StudentID NOT IN (
-    SELECT e.StudentID
-    FROM Enrollments e
-    JOIN Courses c ON e.CourseID = c.CourseID
-    WHERE c.CourseName = 'Math 101'
+  SELECT e.StudentID
+  FROM Enrollments e
+  JOIN Courses c ON e.CourseID = c.CourseID
+  WHERE c.CourseName = 'Math 101'
 );
 
 -----26. Ordersva Paymentsjadvallaridan foydalanib , to'lov tafsilotlari etishmayotgan buyurtmalarni qaytarish uchun so'rov yozing.
@@ -705,9 +700,10 @@ WHERE p.PaymentID IS NULL;
 ---- 27. Productsva Categoriesjadvallaridan foydalanib , "Elektronika" yoki "Mebel" toifasiga kiruvchi mahsulotlar ro'yxati uchun so'rov yozing.
 ---- 🔁 Kutilayotgan ustunlar: ProductID , ProductName,CategoryName
 
+
 SELECT p.ProductID, p.ProductName, c.CategoryName
 FROM Products p
-JOIN Categories c ON p.Category = c.CategoryID
+JOIN Categories c ON p.CategoryID = c.CategoryID
 WHERE c.CategoryName IN ('Electronics', 'Furniture');
 
 
